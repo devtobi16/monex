@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:monex/login.dart';
+import 'package:monex/firebase_auth_implementation/firebase_auth_services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -14,6 +16,7 @@ class _SignUpState extends State<SignUp> {
   TextEditingController _passwordController = TextEditingController();
 
   bool _isValid = true;
+  FirebaseAuthService _authService = FirebaseAuthService();
 
   @override
   void dispose() {
@@ -22,9 +25,20 @@ class _SignUpState extends State<SignUp> {
     super.dispose();
   }
 
-  void _signUp() {
+  void _signUp() async {
     if (_formKey.currentState!.validate()) {
-      // Perform login
+      // Perform signup
+      String email = _emailController.text;
+      String password = _passwordController.text;
+
+      User? user =
+          await _authService.signUpWithEmailAndPassword(email, password);
+      if (user != null) {
+        print('User has been registered successfully');
+        Navigator.push(context, MaterialPageRoute(builder: (_) => LogIn()));
+      } else {
+        print('Error Occurred');
+      }
     }
   }
 

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "560797283183",
+    "project_id": "monex-main",
+    "storage_bucket": "monex-main.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:560797283183:android:ec2746321248da1b25ee9a",
+        "android_client_info": {
+          "package_name": "com.example.monex"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMJUyKYhHZ8stzmaoO_d2I0VKTgwfoimk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
