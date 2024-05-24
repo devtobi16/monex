@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:monex/login.dart';
-import 'package:monex/firebase_auth_implementation/firebase_auth_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class SignUp extends StatefulWidget {
-  const SignUp({super.key});
+  const SignUp({Key? key}) : super(key: key);
 
   @override
   State<SignUp> createState() => _SignUpState();
@@ -15,8 +14,9 @@ class _SignUpState extends State<SignUp> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
 
-  bool _isValid = true;
-  FirebaseAuthService _authService = FirebaseAuthService();
+  String? emailError;
+  String? passwordError;
+  bool loading = false;
 
   @override
   void dispose() {
@@ -27,18 +27,34 @@ class _SignUpState extends State<SignUp> {
 
   void _signUp() async {
     if (_formKey.currentState!.validate()) {
-      // Perform signup
-      String email = _emailController.text;
-      String password = _passwordController.text;
-
-      User? user =
-          await _authService.signUpWithEmailAndPassword(email, password);
-      if (user != null) {
-        print('User has been registered successfully');
-        Navigator.push(context, MaterialPageRoute(builder: (_) => LogIn()));
-      } else {
-        print('Error Occurred');
+      setState(() {
+        loading = true;
+      });
+      try {
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LogIn()),
+        );
+        setState(() {
+          emailError = null;
+          passwordError = null;
+        });
+      } on FirebaseAuthException catch (error) {
+        setState(() {
+          emailError = null;
+          passwordError = error.message;
+        });
+      } catch (e, s) {
+        print(e);
+        print(s);
       }
+      setState(() {
+        loading = false;
+      });
     }
   }
 
@@ -68,7 +84,7 @@ class _SignUpState extends State<SignUp> {
                     ),
                   ),
                   SizedBox(height: 100),
-                  if (!_isValid)
+                  if (emailError != null || passwordError != null)
                     Container(
                       padding: EdgeInsets.all(8),
                       margin: EdgeInsets.only(bottom: 10),
@@ -76,9 +92,19 @@ class _SignUpState extends State<SignUp> {
                         color: Colors.red.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Text(
-                        "Invalid email or password",
-                        style: TextStyle(color: Colors.red),
+                      child: Column(
+                        children: [
+                          if (emailError != null)
+                            Text(
+                              emailError!,
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          if (passwordError != null)
+                            Text(
+                              passwordError!,
+                              style: TextStyle(color: Colors.red),
+                            ),
+                        ],
                       ),
                     ),
                   SizedBox(
@@ -87,37 +113,40 @@ class _SignUpState extends State<SignUp> {
                       controller: _emailController,
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: _isValid
+                        fillColor: emailError == null
                             ? Colors.grey[200]
                             : Colors.red.withOpacity(0.1),
                         hintText: 'E-mail',
                         prefixIcon: Icon(Icons.person,
-                            color: _isValid ? Colors.black : Colors.red),
+                            color: emailError == null
+                                ? Colors.black
+                                : Colors.red),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
                           borderSide: BorderSide(
-                              color: _isValid ? Colors.blue : Colors.red),
+                              color: emailError == null
+                                  ? Colors.blue
+                                  : Colors.red),
                         ),
                         errorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
-                          borderSide: BorderSide(color: Colors.transparent),
+                          borderSide: BorderSide(
+                              color: Colors.red), // Change border color to red
                         ),
                       ),
                       onChanged: (_) {
-                        if (!_isValid) {
-                          setState(() {
-                            _isValid = true;
-                          });
-                        }
+                        setState(() {
+                          emailError = null;
+                        });
                       },
                       validator: (value) {
                         if (value == null ||
                             value.isEmpty ||
-                            !value.contains('@')) {
+                            !RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(value)) {
                           setState(() {
-                            _isValid = false;
+                            emailError = 'Invalid email';
                           });
-                          return 'Invalid email';
+                          return null;
                         }
                         return null;
                       },
@@ -132,34 +161,37 @@ class _SignUpState extends State<SignUp> {
                       decoration: InputDecoration(
                         hintText: 'Password',
                         prefixIcon: Icon(Icons.lock,
-                            color: _isValid ? Colors.black : Colors.red),
+                            color: passwordError == null
+                                ? Colors.black
+                                : Colors.red),
                         filled: true,
-                        fillColor: _isValid
+                        fillColor: passwordError == null
                             ? Colors.grey[200]
                             : Colors.red.withOpacity(0.1),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
                           borderSide: BorderSide(
-                              color: _isValid ? Colors.blue : Colors.red),
+                              color: passwordError == null
+                                  ? Colors.blue
+                                  : Colors.red),
                         ),
                         errorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
-                          borderSide: BorderSide(color: Colors.transparent),
+                          borderSide: BorderSide(
+                              color: Colors.red), // Change border color to red
                         ),
                       ),
                       onChanged: (_) {
-                        if (!_isValid) {
-                          setState(() {
-                            _isValid = true;
-                          });
-                        }
+                        setState(() {
+                          passwordError = null;
+                        });
                       },
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           setState(() {
-                            _isValid = false;
+                            passwordError = 'Password cannot be empty';
                           });
-                          return 'Password cannot be empty';
+                          return null;
                         }
                         return null;
                       },
@@ -190,7 +222,9 @@ class _SignUpState extends State<SignUp> {
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
-                          context, MaterialPageRoute(builder: (_) => LogIn()));
+                        context,
+                        MaterialPageRoute(builder: (_) => LogIn()),
+                      );
                     },
                     child: Text(
                       "Already have an account?",
@@ -210,3 +244,4 @@ class _SignUpState extends State<SignUp> {
     );
   }
 }
+
