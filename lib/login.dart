@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:monex/forgotPassword.dart';
 import 'package:monex/signUp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:monex/home.dart';
+import 'package:monex/widgets/home.dart';
 
 class LogIn extends StatefulWidget {
   const LogIn({Key? key}) : super(key: key);
@@ -35,15 +35,11 @@ class _LogInState extends State<LogIn> {
       try {
         await FirebaseAuth.instance
             .signInWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-        )
-            .then((value) =>
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        Home())));
+              email: _emailController.text.trim(),
+              password: _passwordController.text,
+            )
+            .then((value) => Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => Home())));
         setState(() {
           emailError = null;
           passwordError = null;
@@ -123,9 +119,8 @@ class _LogInState extends State<LogIn> {
                             : Colors.red.withOpacity(0.1),
                         hintText: 'E-mail',
                         prefixIcon: Icon(Icons.person,
-                            color: emailError == null
-                                ? Colors.black
-                                : Colors.red),
+                            color:
+                                emailError == null ? Colors.black : Colors.red),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
                           borderSide: BorderSide(
@@ -147,7 +142,8 @@ class _LogInState extends State<LogIn> {
                       validator: (value) {
                         if (value == null ||
                             value.isEmpty ||
-                            !RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(value)) {
+                            !RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+                                .hasMatch(value)) {
                           setState(() {
                             emailError = 'Invalid email';
                           });
