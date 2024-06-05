@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_credit_card/flutter_credit_card.dart';
+import 'package:monex/viewCard.dart';
 
 class AddNewCard extends StatefulWidget {
   const AddNewCard({Key? key}) : super(key: key);
@@ -39,7 +40,7 @@ class AddNewCardState extends State<AddNewCard> {
     }
   }
 
-  storeUserCard(String number, String expiry, String cvv, String name) {
+  void storeUserCard(String number, String expiry, String cvv, String name) {
     FirebaseFirestore.instance
         .collection('users')
         .doc(userUid)
@@ -50,27 +51,32 @@ class AddNewCardState extends State<AddNewCard> {
       'cvv': cvv,
       'expiry': expiry
     }).then((value) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ViewCard(
+            cardNumber: this.cardNumber,
+            expiryDate: this.expiryDate,
+            cardHolderName: this.cardHolderName,
+            cvvCode: this.cvvCode,
+          ),
+        ),
+      );
+
       print('Card details saved successfully!');
     }).catchError((error) {
       print('Failed to save card details: $error');
     });
   }
 
-  void _onValidate() {
-    if (formKey.currentState?.validate() ?? false) {
-      storeUserCard(cardNumber, expiryDate, cvvCode, cardHolderName);
-    } else {
-      print('Invalid card details!');
-    }
-  }
-
   void onCreditCardModelChange(CreditCardModel creditCardModel) {
     setState(() {
-      cardNumber = creditCardModel.cardNumber;
-      expiryDate = creditCardModel.expiryDate;
-      cardHolderName = creditCardModel.cardHolderName;
-      cvvCode = creditCardModel.cvvCode;
-      isCvvFocused = creditCardModel.isCvvFocused;
+      this.cardNumber = creditCardModel.cardNumber; // Use 'this' keyword here
+      this.expiryDate = creditCardModel.expiryDate; // Use 'this' keyword here
+      this.cardHolderName =
+          creditCardModel.cardHolderName; // Use 'this' keyword here
+      this.cvvCode = creditCardModel.cvvCode; // Use 'this' keyword here
+      this.isCvvFocused = creditCardModel.isCvvFocused;
     });
   }
 
@@ -155,7 +161,10 @@ class AddNewCardState extends State<AddNewCard> {
                         onCreditCardModelChange: onCreditCardModelChange,
                       ),
                       GestureDetector(
-                        onTap: _onValidate,
+                        onTap: () {
+                          storeUserCard(
+                              cardNumber, expiryDate, cvvCode, cardHolderName);
+                        },
                         child: Container(
                           margin: const EdgeInsets.symmetric(
                             horizontal: 16,
