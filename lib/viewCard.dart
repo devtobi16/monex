@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_credit_card/flutter_credit_card.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:monex/add_newcard.dart';
 
 class ViewCard extends StatefulWidget {
   final String cardNumber;
