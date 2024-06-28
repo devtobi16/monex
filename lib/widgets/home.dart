@@ -31,6 +31,7 @@ class _HomeState extends State<Home> {
       child: BlocBuilder<GetExpensesBloc, GetExpensesState>(
         builder: (context, state) {
           if (state is GetExpensesSuccess) {
+            final totalExpenses = _calculateTotalExpenses(widget.expenses);
             return Scaffold(
               backgroundColor: Colors.white,
               bottomNavigationBar: Container(
@@ -262,7 +263,7 @@ class _HomeState extends State<Home> {
                                                             FontWeight.w400),
                                                   ),
                                                   Text(
-                                                    '\$800.00',
+                                                    '\$${totalExpenses.toStringAsFixed(2)}',
                                                     style: TextStyle(
                                                         fontSize: 14,
                                                         color: Colors.white,
@@ -461,5 +462,13 @@ class _HomeState extends State<Home> {
         },
       ),
     );
+  }
+
+  double _calculateTotalExpenses(List<Expense> expenses) {
+    double total = 0;
+    for (var expense in expenses) {
+      total += expense.amount;
+    }
+    return total;
   }
 }
