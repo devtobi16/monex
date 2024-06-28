@@ -41,6 +41,10 @@ dependencies:
   flutter_credit_card: ^4.0.1
   cloud_firestore: ^4.17.4
   fl_chart: ^0.68.0
+  flutter_colorpicker: ^1.1.0
+  bloc: ^8.1.4
+  flutter_bloc: ^8.1.6
+  equatable: ^2.0.5
 
 dev_dependencies:
   flutter_test:

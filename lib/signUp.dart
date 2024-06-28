@@ -118,9 +118,8 @@ class _SignUpState extends State<SignUp> {
                             : Colors.red.withOpacity(0.1),
                         hintText: 'E-mail',
                         prefixIcon: Icon(Icons.person,
-                            color: emailError == null
-                                ? Colors.black
-                                : Colors.red),
+                            color:
+                                emailError == null ? Colors.black : Colors.red),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
                           borderSide: BorderSide(
@@ -142,7 +141,8 @@ class _SignUpState extends State<SignUp> {
                       validator: (value) {
                         if (value == null ||
                             value.isEmpty ||
-                            !RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(value)) {
+                            !RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+                                .hasMatch(value)) {
                           setState(() {
                             emailError = 'Invalid email';
                           });
@@ -200,23 +200,25 @@ class _SignUpState extends State<SignUp> {
                   SizedBox(height: 30),
                   InkWell(
                     onTap: _signUp,
-                    child: Container(
-                      height: 50,
-                      width: 375,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.blue,
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Sign Up',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ),
+                    child: loading==false
+                        ? Container(
+                            height: 50,
+                            width: 375,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.blue,
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Sign Up',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          )
+                        : const CircularProgressIndicator(color: Colors.blue),
                   ),
                   SizedBox(height: 30),
                   GestureDetector(
@@ -244,4 +246,3 @@ class _SignUpState extends State<SignUp> {
     );
   }
 }
-

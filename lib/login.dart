@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:monex/bloc/get_expenses_bloc/get_expenses_bloc.dart';
 import 'package:monex/forgotPassword.dart';
+import 'package:monex/packages/src/firebase_expense_repo.dart';
 import 'package:monex/signUp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:monex/widgets/home.dart';
@@ -27,7 +30,7 @@ class _LogInState extends State<LogIn> {
     super.dispose();
   }
 
-  void _signIn() async {
+  Future<void> _signIn() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         loading = true;
@@ -35,11 +38,22 @@ class _LogInState extends State<LogIn> {
       try {
         await FirebaseAuth.instance
             .signInWithEmailAndPassword(
-              email: _emailController.text.trim(),
-              password: _passwordController.text,
-            )
-            .then((value) => Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => Home())));
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        )
+            .then((value) async {
+          final expenses = await FirebaseExpenseRepo().getExpenses();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BlocProvider(
+                create: (context) =>
+                    GetExpensesBloc(FirebaseExpenseRepo())..add(GetExpenses()),
+                child: Home(expenses: expenses),
+              ),
+            ),
+          );
+        });
         setState(() {
           emailError = null;
           passwordError = null;
@@ -201,23 +215,25 @@ class _LogInState extends State<LogIn> {
                   SizedBox(height: 30),
                   InkWell(
                     onTap: _signIn,
-                    child: Container(
-                      height: 50,
-                      width: 375,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.blue,
-                      ),
-                      child: Center(
-                        child: Text(
-                          'LOGIN',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ),
+                    child: loading == false
+                        ? Container(
+                            height: 50,
+                            width: 375,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.blue,
+                            ),
+                            child: Center(
+                              child: Text(
+                                'LOGIN',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          )
+                        : CircularProgressIndicator(color: Colors.blue),
                   ),
                   SizedBox(height: 30),
                   GestureDetector(
