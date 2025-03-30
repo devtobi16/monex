@@ -1,16 +1,14 @@
-# monex
+# 💰 Monex – Smart Financial Management  
 
-A new Flutter project.
+## 🚀 Overview  
+**Monex** is an innovative financial management system designed to help users **track expenses, manage budgets, and gain insights** into their financial habits. With a focus on **efficiency, security, and user experience**.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## 🛠️ Tech Stack  
+- **Frontend:** Flutter, Dart 
+- **Database:**  Firebase (for real-time updates)  
+- **Authentication:** FirebaseAuth
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
